@@ -15,11 +15,7 @@ services:
       - "5432:5432"
 
   # Redis
-  redis:
-    container_name: redis
-    image: redis
-    ports:
-      - "6379:6379"
+ 
 
   # Backend
   smart-brain-api:
@@ -32,10 +28,9 @@ services:
     command: npm start
     working_dir: /usr/src/smart-brain-api
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       POSTGRES_URI: postgres://admin:password@postgres:5432/smart-brain
-      REDIS_URI: redis://redis:6379
     # Heads up! Docker has updated this feature and now you don't need to define the links property in order for things to work - https://docs.docker.com/compose/networking/
     # links:
     #   - postgres
