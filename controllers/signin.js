@@ -34,17 +34,22 @@ const signToken = email => {
   const token = jwt.sign(jwtPayload, process.env.JWT_SECRET);
   return token;
 };
-const storeTokenToRedis = (id, token) => {
-  redisClient.client.set(id, token);
+
+const setToken = (id, token) => {
+  return new Promise((resolve, reject) => {
+      resolve(redisClient.set(token, id));
+  });
 };
 
 const createSessions = user => {
   const { id, email } = user;
   const token = signToken(email);
 
-  return storeTokenToRedis(id, token).then(() => {
-    return { sucess: true, userId: id, token };
-  });
+  return setToken(id, token)
+    .then(() => {
+      return { sucess: true, userId: id, token };
+    })
+    .catch(err => console.log(err));
 };
 
 const handleAuth = (db, bcrypt) => (req, res) => {
