@@ -30,10 +30,11 @@ const corsOptions = {
 }
 
 app.use(morgan('combined'));
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
+app.use(cors())
 app.use(bodyParser.json());
 
-app.post('/signin', signin.handleSignin(db, bcrypt))
+app.post('/signin', signin.handleAuth(db, bcrypt))
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
 app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db)})
 app.post('/profile/:id', (req, res) => { profile.handleProfileUpdate(req, res, db)})
