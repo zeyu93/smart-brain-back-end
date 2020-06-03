@@ -36,9 +36,7 @@ const signToken = email => {
 };
 
 const setToken = (id, token) => {
-  return new Promise((resolve, reject) => {
-      resolve(redisClient.set(token, id));
-  });
+  return Promise.resolve(redisClient.set(token, id))
 };
 
 const createSessions = user => {
@@ -52,10 +50,22 @@ const createSessions = user => {
     .catch(err => console.log(err));
 };
 
+const getAuthToken = (req,res) => {
+  const { Authorization } = req.headers;
+  console.log(Authorization)
+  redisClient.get(Authorization, (err,reply)=>{
+    if(err || !reply) {
+      return res.status("400").json('unauthorized')
+    }
+    return res.json({id: reply})
+  })
+}
+
 const handleAuth = (db, bcrypt) => (req, res) => {
-  const { authorization } = req.headers;
-  return authorization
-    ? getAuthToken()
+  const { Authorization } = req.headers;
+  console.log(req.headers)
+  return Authorization
+    ? getAuthToken(req,res)
     : handleSignin(db, bcrypt, req, res)
         .then(data => {
           return data.id && data.email
@@ -67,5 +77,6 @@ const handleAuth = (db, bcrypt) => (req, res) => {
 };
 
 module.exports = {
-  handleAuth: handleAuth
+  handleAuth: handleAuth,
+  redisClient: redisClient
 };

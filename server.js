@@ -9,6 +9,7 @@ const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
+const auth = require('./middlewares/authorization');
 
 //Database Setup
 const db = knex({
@@ -30,16 +31,15 @@ const corsOptions = {
 }
 
 app.use(morgan('combined'));
-// app.use(cors(corsOptions))
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(bodyParser.json());
 
 app.post('/signin', signin.handleAuth(db, bcrypt))
-app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
-app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db)})
-app.post('/profile/:id', (req, res) => { profile.handleProfileUpdate(req, res, db)})
-app.put('/image', (req, res) => { image.handleImage(req, res, db)})
-app.post('/imageurl', (req, res) => { image.handleApiCall(req, res)})
+app.post('/register',  (req, res) => { register.handleRegister(req, res, db, bcrypt) })
+app.get('/profile/:id', auth.requireAuth, (req, res) => { profile.handleProfileGet(req, res, db)})
+app.post('/profile/:id', auth.requireAuth,(req, res) => { profile.handleProfileUpdate(req, res, db)})
+app.put('/image',auth.requireAuth, (req, res) => { image.handleImage(req, res, db)})
+app.post('/imageurl', auth.requireAuth,(req, res) => { image.handleApiCall(req, res)})
 
 app.listen(3001, ()=> {
   console.log('app is running on port 3001');

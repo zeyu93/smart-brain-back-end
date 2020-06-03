@@ -1,5 +1,5 @@
 # SmartBrain-api - Dockerized
-Final project for Udemy course - using Docker
+Backend repo for the Smart Brain Project , uses Docker to containerize the back-end api and database (postgresSQL), and uses Redis for session management (JWT token)
 
 1. Clone this repo
 2. run `npm install`
